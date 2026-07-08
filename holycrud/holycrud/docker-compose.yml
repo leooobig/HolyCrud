@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: holycrud
+    environment:
+      POSTGRES_DB: ${POST_DB}
+      POSTGRES_USER: ${POST_USER}
+      POSTGRES_PASSWORD: ${POST_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "${POST_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - holycrud-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POST_USER} -d ${POST_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  holycrud-network:
+    driver: bridge
